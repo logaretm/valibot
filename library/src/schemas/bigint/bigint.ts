@@ -55,7 +55,7 @@ export function bigint(
      *
      * @returns The parsed output.
      */
-    parse(input, info) {
+    parse(input, info, opts) {
       // Check type of input
       if (typeof input !== 'bigint') {
         throw new ValiError([
@@ -71,7 +71,7 @@ export function bigint(
       }
 
       // Execute pipe and return output
-      return executePipe(input, pipe, { ...info, reason: 'bigint' });
+      return executePipe(input, pipe, { ...info, reason: 'bigint' }, opts);
     },
   };
 }

@@ -41,11 +41,8 @@ describe('string', () => {
     const schema = string([email(), minLength(8)]);
     expect(() => parse(schema, 'hello@', { abortEarly: false }))
       .throws()
-      .satisfies((error: Error) => {
+      .satisfies((error: ValiError) => {
         expect(error).toBeInstanceOf(ValiError);
-        if (!(error instanceof ValiError)) {
-          return false;
-        }
 
         expect(error.issues.length).toBe(2);
         expect(error.issues[0].message).toBe('Invalid email');

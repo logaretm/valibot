@@ -61,7 +61,7 @@ export function bigintAsync(
      *
      * @returns The parsed output.
      */
-    async parse(input, info) {
+    async parse(input, info, opts) {
       // Check type of input
       if (typeof input !== 'bigint') {
         throw new ValiError([
@@ -77,7 +77,7 @@ export function bigintAsync(
       }
 
       // Execute pipe and return output
-      return executePipeAsync(input, pipe, { ...info, reason: 'bigint' });
+      return executePipeAsync(input, pipe, { ...info, reason: 'bigint' }, opts);
     },
   };
 }

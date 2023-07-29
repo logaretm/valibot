@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { parse } from '../../methods/index.ts';
 import { maxValue, minValue } from '../../validations/index.ts';
 import { bigint } from './bigint.ts';
+import { ValiError } from '../../error/index.ts';
 
 describe('bigint', () => {
   test('should pass only bigints', () => {
@@ -34,5 +35,21 @@ describe('bigint', () => {
     const output2 = parse(schema2, input2);
     expect(output2).toEqual(input2);
     expect(() => parse(schema2, 12346789n)).toThrowError(valueError);
+  });
+
+  test('should throw an error with multiple issues if abort early is disabled', () => {
+    const schema = bigint([maxValue(1n), maxValue(3n)]);
+    const input = 4n;
+    expect(() => parse(schema, input, { abortEarly: false }))
+      .throws()
+      .satisfies((error: ValiError) => {
+        expect(error).toBeInstanceOf(ValiError);
+
+        expect(error.issues.length).toBe(2);
+        expect(error.issues[0].message).toBe('Invalid value');
+        expect(error.issues[1].message).toBe('Invalid value');
+
+        return true;
+      });
   });
 });
