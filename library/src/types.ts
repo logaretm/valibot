@@ -50,7 +50,11 @@ export type BaseSchema<TInput = any, TOutput = TInput> = {
  */
 export type BaseSchemaAsync<TInput = any, TOutput = TInput> = {
   async: true;
-  parse(input: unknown, info?: ParseInfo): Promise<TOutput>;
+  parse(
+    input: unknown,
+    info?: ParseInfo,
+    opts?: PipeExecutionOptions
+  ): Promise<TOutput>;
   types?: { input: TInput; output: TOutput };
 };
 
