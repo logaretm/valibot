@@ -58,7 +58,7 @@ export function blobAsync(
      *
      * @returns The parsed output.
      */
-    async parse(input, info) {
+    async parse(input, info, opts) {
       // Check type of input
       if (!(input instanceof Blob)) {
         throw new ValiError([
@@ -74,7 +74,7 @@ export function blobAsync(
       }
 
       // Execute pipe and return output
-      return executePipeAsync(input, pipe, { ...info, reason: 'blob' });
+      return executePipeAsync(input, pipe, { ...info, reason: 'blob' }, opts);
     },
   };
 }

@@ -55,7 +55,7 @@ export function blob(
      *
      * @returns The parsed output.
      */
-    parse(input, info) {
+    parse(input, info, opts) {
       // Check type of input
       if (!(input instanceof Blob)) {
         throw new ValiError([
@@ -71,7 +71,7 @@ export function blob(
       }
 
       // Execute pipe and return output
-      return executePipe(input, pipe, { ...info, reason: 'blob' });
+      return executePipe(input, pipe, { ...info, reason: 'blob' }, opts);
     },
   };
 }

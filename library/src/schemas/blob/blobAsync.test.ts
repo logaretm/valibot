@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { parseAsync } from '../../methods/index.ts';
 import { blobAsync } from './blobAsync.ts';
+import { maxSize } from '../../validations/index.ts';
+import { ValiError } from '../../error/index.ts';
 
 describe('blobAsync', () => {
   test('should pass only blobs', async () => {
@@ -22,5 +24,24 @@ describe('blobAsync', () => {
     const value = new Blob(['123']);
     const output = await parseAsync(blobAsync([() => value]), new Blob());
     expect(output).toBe(value);
+  });
+
+  test('should throw an error with multiple issues if abort early is disabled', () => {
+    const schema = blobAsync([maxSize(1), maxSize(2)]);
+    const value = new Blob(['123']);
+    expect(() =>
+      parseAsync(schema, value, { abortEarly: false })
+    ).rejects.toSatisfy((error) => {
+      expect(error).toBeInstanceOf(ValiError);
+      if (!(error instanceof ValiError)) {
+        return false;
+      }
+
+      expect(error.issues.length).toBe(2);
+      expect(error.issues[0].message).toBe('Invalid size');
+      expect(error.issues[1].message).toBe('Invalid size');
+
+      return true;
+    });
   });
 });
