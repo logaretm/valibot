@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { parseAsync } from '../../methods/index.ts';
 import { email, maxLength, minLength } from '../../validations/index.ts';
 import { stringAsync } from './stringAsync.ts';
+import { ValiError } from '../../error/index.ts';
 
 describe('stringAsync', () => {
   test('should pass only strings', async () => {
@@ -38,5 +39,26 @@ describe('stringAsync', () => {
     await expect(parseAsync(schema2, 'jane@example')).rejects.toThrowError(
       emailError
     );
+  });
+
+  test('should throw error with multiple issues if abortEarly is disabled', async () => {
+    const schema = stringAsync([email(), minLength(8)]);
+
+    await expect(
+      parseAsync(schema, 'hello@', {
+        abortEarly: false,
+      })
+    ).rejects.toSatisfy((error) => {
+      expect(error).toBeInstanceOf(ValiError);
+      if (!(error instanceof ValiError)) {
+        return false;
+      }
+
+      expect(error.issues.length).toBe(2);
+      expect(error.issues[0].message).toBe('Invalid email');
+      expect(error.issues[1].message).toBe('Invalid length');
+
+      return true;
+    });
   });
 });

@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { parse } from '../../methods/index.ts';
 import { email, maxLength, minLength } from '../../validations/index.ts';
 import { string } from './string.ts';
+import { ValiError } from '../../error/index.ts';
 
 describe('string', () => {
   test('should pass only strings', () => {
@@ -34,5 +35,23 @@ describe('string', () => {
     const output2 = parse(schema2, input2);
     expect(output2).toBe(input2);
     expect(() => parse(schema2, 'jane@example')).toThrowError(emailError);
+  });
+
+  test('should throw error with multiple issues if abortEarly is disabled', () => {
+    const schema = string([email(), minLength(8)]);
+    expect(() => parse(schema, 'hello@', { abortEarly: false }))
+      .throws()
+      .satisfies((error: Error) => {
+        expect(error).toBeInstanceOf(ValiError);
+        if (!(error instanceof ValiError)) {
+          return false;
+        }
+
+        expect(error.issues.length).toBe(2);
+        expect(error.issues[0].message).toBe('Invalid email');
+        expect(error.issues[1].message).toBe('Invalid length');
+
+        return true;
+      });
   });
 });

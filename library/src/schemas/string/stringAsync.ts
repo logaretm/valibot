@@ -61,7 +61,7 @@ export function stringAsync(
      *
      * @returns The parsed output.
      */
-    parse(input, info) {
+    parse(input, info, opts) {
       // Check type of input
       if (typeof input !== 'string') {
         throw new ValiError([
@@ -77,7 +77,7 @@ export function stringAsync(
       }
 
       // Execute pipe and return output
-      return executePipeAsync(input, pipe, { ...info, reason: 'string' });
+      return executePipeAsync(input, pipe, { ...info, reason: 'string' }, opts);
     },
   };
 }

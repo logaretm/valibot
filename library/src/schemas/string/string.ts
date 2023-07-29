@@ -55,7 +55,7 @@ export function string(
      *
      * @returns The parsed output.
      */
-    parse(input, info) {
+    parse(input, info, opts) {
       // Check type of input
       if (typeof input !== 'string') {
         throw new ValiError([
@@ -71,7 +71,7 @@ export function string(
       }
 
       // Execute pipe and return output
-      return executePipe(input, pipe, { ...info, reason: 'string' });
+      return executePipe(input, pipe, { ...info, reason: 'string' }, opts);
     },
   };
 }
