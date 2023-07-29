@@ -1,4 +1,4 @@
-import type { BaseSchema, Output } from '../../types.ts';
+import type { BaseSchema, Output, PipeExecutionOptions } from '../../types.ts';
 
 /**
  * Parses unknown input based on a schema.
@@ -10,7 +10,8 @@ import type { BaseSchema, Output } from '../../types.ts';
  */
 export function parse<TSchema extends BaseSchema>(
   schema: TSchema,
-  input: unknown
+  input: unknown,
+  opts?: PipeExecutionOptions
 ): Output<TSchema> {
-  return schema.parse(input);
+  return schema.parse(input, undefined, opts);
 }

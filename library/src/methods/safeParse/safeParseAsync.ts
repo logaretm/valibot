@@ -1,5 +1,10 @@
 import type { ValiError } from '../../error/index.ts';
-import type { BaseSchema, BaseSchemaAsync, Output } from '../../types.ts';
+import type {
+  BaseSchema,
+  BaseSchemaAsync,
+  Output,
+  PipeExecutionOptions,
+} from '../../types.ts';
 
 /**
  * Parses unknown input based on a schema.
@@ -13,7 +18,8 @@ export async function safeParseAsync<
   TSchema extends BaseSchema | BaseSchemaAsync
 >(
   schema: TSchema,
-  input: unknown
+  input: unknown,
+  opts?: PipeExecutionOptions
 ): Promise<
   | { success: true; data: Output<TSchema> }
   | { success: false; error: ValiError }
@@ -21,7 +27,7 @@ export async function safeParseAsync<
   try {
     return {
       success: true,
-      data: await schema.parse(input),
+      data: await schema.parse(input, undefined, opts),
     };
   } catch (error) {
     return {

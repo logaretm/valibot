@@ -1,4 +1,9 @@
-import type { BaseSchema, BaseSchemaAsync, Output } from '../../types.ts';
+import type {
+  BaseSchema,
+  BaseSchemaAsync,
+  Output,
+  PipeExecutionOptions,
+} from '../../types.ts';
 
 /**
  * Parses unknown input based on a schema.
@@ -10,7 +15,8 @@ import type { BaseSchema, BaseSchemaAsync, Output } from '../../types.ts';
  */
 export async function parseAsync<TSchema extends BaseSchema | BaseSchemaAsync>(
   schema: TSchema,
-  input: unknown
+  input: unknown,
+  opts?: PipeExecutionOptions
 ): Promise<Output<TSchema>> {
-  return schema.parse(input);
+  return schema.parse(input, undefined, opts);
 }

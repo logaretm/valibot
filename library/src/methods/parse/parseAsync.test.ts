@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { numberAsync, object, string } from '../../schemas/index.ts';
 import { parseAsync } from './parseAsync.ts';
+import { email, minLength } from '../../validations/index.ts';
+import { ValiError } from '../../error/index.ts';
 
 describe('parseAsync', () => {
   test('should parse schema', async () => {
@@ -25,5 +27,24 @@ describe('parseAsync', () => {
     await expect(parseAsync(objectSchema, {})).rejects.toThrowError(
       'Invalid type'
     );
+  });
+
+  test('should throw error with multiple issues if abortEarly is disabled', async () => {
+    await expect(
+      parseAsync(string([email(), minLength(8)]), 'hello@', {
+        abortEarly: false,
+      })
+    ).rejects.toSatisfy((error) => {
+      expect(error).toBeInstanceOf(ValiError);
+      if (!(error instanceof ValiError)) {
+        return false;
+      }
+
+      expect(error.issues.length).toBe(2);
+      expect(error.issues[0].message).toBe('Invalid email');
+      expect(error.issues[1].message).toBe('Invalid length');
+
+      return true;
+    });
   });
 });

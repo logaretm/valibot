@@ -1,5 +1,5 @@
 import type { ValiError } from '../../error/index.ts';
-import type { BaseSchema, Output } from '../../types.ts';
+import type { BaseSchema, Output, PipeExecutionOptions } from '../../types.ts';
 
 /**
  * Parses unknown input based on a schema.
@@ -11,14 +11,15 @@ import type { BaseSchema, Output } from '../../types.ts';
  */
 export function safeParse<TSchema extends BaseSchema>(
   schema: TSchema,
-  input: unknown
+  input: unknown,
+  opts?: PipeExecutionOptions
 ):
   | { success: true; data: Output<TSchema> }
   | { success: false; error: ValiError } {
   try {
     return {
       success: true,
-      data: schema.parse(input),
+      data: schema.parse(input, undefined, opts),
     };
   } catch (error) {
     return {
