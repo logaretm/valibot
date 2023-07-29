@@ -30,11 +30,18 @@ export type PathItem =
   | ArrayPathItem;
 
 /**
+ * Configures how a pipe should be executed.
+ */
+export interface PipeExecutionOptions {
+  abortEarly?: boolean;
+}
+
+/**
  * Base schema type.
  */
 export type BaseSchema<TInput = any, TOutput = TInput> = {
   async: false;
-  parse(input: unknown, info?: ParseInfo): TOutput;
+  parse(input: unknown, info?: ParseInfo, opts?: PipeExecutionOptions): TOutput;
   types?: { input: TInput; output: TOutput };
 };
 

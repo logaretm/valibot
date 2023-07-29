@@ -1,4 +1,6 @@
-import type { Pipe, ValidateInfo } from '../../types.ts';
+import { ValiError } from '../../error/index.ts';
+import type { Issue, Issues } from '../../error/index.ts';
+import type { Pipe, PipeExecutionOptions, ValidateInfo } from '../../types.ts';
 
 /**
  * Executes the validation and transformation pipe.
@@ -12,7 +14,33 @@ import type { Pipe, ValidateInfo } from '../../types.ts';
 export function executePipe<TValue>(
   input: TValue,
   pipe: Pipe<TValue>,
-  info: ValidateInfo
+  info: ValidateInfo,
+  opts?: PipeExecutionOptions
 ): TValue {
-  return pipe.reduce((value, action) => action(value, info), input);
+  // By default it is true
+  if (opts?.abortEarly ?? true) {
+    return pipe.reduce((value, action) => action(value, info), input);
+  }
+
+  const issues: Issue[] = [];
+
+  const endValue = pipe.reduce((value, action) => {
+    try {
+      return action(value, info);
+    } catch (err) {
+      if (err instanceof ValiError) {
+        issues.push(...err.issues);
+      } else {
+        throw err;
+      }
+
+      return value;
+    }
+  }, input);
+
+  if (issues.length > 0) {
+    throw new ValiError(issues as Issues);
+  }
+
+  return endValue;
 }
